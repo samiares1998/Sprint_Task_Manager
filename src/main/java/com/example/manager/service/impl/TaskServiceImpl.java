@@ -2,12 +2,17 @@ package com.example.manager.service.impl;
 
 import com.example.manager.dto.TaskRequest;
 import com.example.manager.exception.ResourceNotFoundException;
+import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.Task;
 import com.example.manager.model.User;
 import com.example.manager.repository.TaskRepository;
 import com.example.manager.repository.UserRepository;
 import com.example.manager.service.TaskService;
+import com.example.manager.service.priority.TaskFactory;
+import com.example.manager.service.strategy.PrioritySortStrategy;
+import com.example.manager.service.strategy.StatusSortStrategy;
+import com.example.manager.service.strategy.TaskManager;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +25,8 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TaskFactory taskFactory;
+    private final TaskManager taskManager;
 
     @Override
     public void addNewTask(TaskRequest taskRequest) {
@@ -56,5 +63,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getAllInCompleted() {
         return taskRepository.findByStatus(Status.COMPLETED);
+    }
+
+    @Override
+    public List<Task> getAllPriority(Priority priority) {
+        return taskFactory.createTask(priority.name()).execute();
+    }
+
+    @Override
+    public List<Task> prioritySortStrategy() {
+        taskRepository.findAll().forEach(taskManager::addTask);
+        taskManager.setSortStrategy(new PrioritySortStrategy());
+        return taskManager.sortTasks();
+    }
+
+    @Override
+    public List<Task> statusSortStrategy() {
+        taskRepository.findAll().forEach(taskManager::addTask);
+        taskManager.setSortStrategy(new StatusSortStrategy());
+        return taskManager.sortTasks();
     }
 }

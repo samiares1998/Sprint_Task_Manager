@@ -1,6 +1,7 @@
 package com.example.manager.controller;
 
 import com.example.manager.dto.TaskRequest;
+import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.Task;
 import com.example.manager.service.TaskService;
@@ -43,4 +44,19 @@ public class TaskController {
     public ResponseEntity<List<Task>> getAllInCompleted() {
         return ResponseEntity.ok(taskService.getAllInCompleted());
     }
+    @GetMapping("/priority")
+    public ResponseEntity<List<Task>> priority(@RequestParam Priority priority) {
+        return ResponseEntity.ok(taskService.getAllPriority(priority));
+    }
+
+    @GetMapping("/sort/priority")
+    public ResponseEntity<List<Task>> allPriority() {
+        return ResponseEntity.ok(taskService.prioritySortStrategy());
+    }
+
+    @GetMapping("/sort/status")
+    public ResponseEntity<List<Task>> allStatus() {
+        return ResponseEntity.ok(taskService.statusSortStrategy());
+    }
+
 }

@@ -33,6 +33,10 @@ public class Task {
     @Column(name = "status", nullable = false)
     private Status status = Status.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "priority", nullable = false)
+    private Priority priority = Priority.LOW;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

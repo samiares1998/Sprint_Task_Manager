@@ -14,6 +14,7 @@ import com.example.manager.service.strategy.PrioritySortStrategy;
 import com.example.manager.service.strategy.StatusSortStrategy;
 import com.example.manager.service.strategy.TaskManager;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -93,19 +94,17 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> statusSortStrategy() {
         taskRepository.findAll().forEach(taskManager::addTask);
         taskManager.setSortStrategy(new StatusSortStrategy());
-        getAllByCreation();
         return taskManager.sortTasks();
     }
 
+    //mejoras: aplicar redis cache para mejorar el rendimiento
     @Override
-    public List<Task> getAllByCreation() {
+    public Page<Task> getAllByCreation( int page,int size) {
         LocalDateTime time = LocalDateTime.of(2024, 11, 8, 10, 30); // Ejemplo: 8 de noviembre de 2024 a las 10:30
-        int page = 0; // Número de página (0 es la primera página)
-        int size = 10; // Tamaño de página, por ejemplo, 10 elementos por página
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt"); // Ordenar por `createdAt` en orden descendente
         PageRequest pageable = PageRequest.of(page, size, sort);
 
-        return taskRepository.findByCreatedAtAfter(time,pageable);
+        return taskRepository.findByCreatedAtAfter(time, pageable);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.example.manager.repository;
 import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.Task;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,5 +17,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByPriority(Priority priority);
     //List<Task> findByCreatedAt(LocalDateTime time, Pageable pageable);
 
-    List<Task> findByCreatedAtAfter(LocalDateTime time, PageRequest pageable);
+    Page<Task> findByCreatedAtAfter(LocalDateTime time, PageRequest pageable);
 }

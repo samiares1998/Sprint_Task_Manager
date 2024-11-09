@@ -6,6 +6,7 @@ import com.example.manager.model.Status;
 import com.example.manager.model.Task;
 import com.example.manager.service.TaskService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +69,12 @@ public class TaskController {
     @GetMapping("/all")
     public ResponseEntity<List<Task>> getAll() {
         return ResponseEntity.ok(taskService.getAll());
+    }
+
+    @GetMapping("/pagination")
+    public ResponseEntity<Page<Task>> getAllByCreation(@RequestParam int page,
+                                                       @RequestParam int size) {
+        return ResponseEntity.ok(taskService.getAllByCreation(page,size));
     }
 
 }

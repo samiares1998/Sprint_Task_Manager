@@ -1,5 +1,7 @@
 package com.example.manager.config.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,11 +29,21 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+        JwtParser parser = Jwts.parser()
+                .setSigningKey(SECRET_KEY)  // Coloca tu clave secreta aquí
+                .build();
+
+        Claims claims = parser.parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 
     private boolean isTokenExpired(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getExpiration().before(new Date());
+        JwtParser parser = Jwts.parser()
+                .setSigningKey(SECRET_KEY)  // Coloca tu clave secreta aquí
+                .build();
+
+        Claims claims = parser.parseClaimsJws(token).getBody();
+        return claims.getExpiration().before(new Date());
     }
 }
 

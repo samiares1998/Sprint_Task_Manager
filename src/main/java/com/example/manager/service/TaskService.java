@@ -4,6 +4,7 @@ import com.example.manager.dto.TaskRequest;
 import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.Task;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -26,7 +27,8 @@ public interface TaskService {
 
     List<Task> statusSortStrategy();
 
-    List<Task> getAllByCreation();
+    Page<Task> getAllByCreation(int page,int size);
 
     List<Task> getAll();
+
 }

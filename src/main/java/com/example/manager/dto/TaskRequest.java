@@ -1,5 +1,6 @@
 package com.example.manager.dto;
 
+import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,5 +19,6 @@ public class TaskRequest {
     private long userId;
     private String title;
     private String description;
+    private Priority priority;
     private Status status;
 }

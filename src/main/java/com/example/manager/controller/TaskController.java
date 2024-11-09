@@ -25,6 +25,12 @@ public class TaskController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/add/list")
+    public ResponseEntity<Void> addNewTaskList(@RequestBody List<TaskRequest> body) {
+        taskService.addNewTaskList(body);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/update/state")
     public ResponseEntity<Void> updateTask(@RequestParam Long id,
                                            @RequestParam Status state) {
@@ -57,6 +63,11 @@ public class TaskController {
     @GetMapping("/sort/status")
     public ResponseEntity<List<Task>> allStatus() {
         return ResponseEntity.ok(taskService.statusSortStrategy());
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Task>> getAll() {
+        return ResponseEntity.ok(taskService.getAll());
     }
 
 }

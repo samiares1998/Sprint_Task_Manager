@@ -10,6 +10,8 @@ import java.util.List;
 public interface TaskService {
     void addNewTask(TaskRequest taskRequest);
 
+    void addNewTaskList(List<TaskRequest> taskRequest);
+
     void updateTask(Long id, Status state);
 
     List<Task> getAllPending();
@@ -23,4 +25,8 @@ public interface TaskService {
     List<Task> prioritySortStrategy();
 
     List<Task> statusSortStrategy();
+
+    List<Task> getAllByCreation();
+
+    List<Task> getAll();
 }

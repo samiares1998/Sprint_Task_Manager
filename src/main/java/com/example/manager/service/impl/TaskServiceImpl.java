@@ -14,8 +14,12 @@ import com.example.manager.service.strategy.PrioritySortStrategy;
 import com.example.manager.service.strategy.StatusSortStrategy;
 import com.example.manager.service.strategy.TaskManager;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,13 +35,21 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void addNewTask(TaskRequest taskRequest) {
         Optional<User> user= userRepository.findById(taskRequest.getUserId());
-        user.ifPresent(value -> taskRepository.save(Task
-                .builder()
-                .user(value)
-                .title(taskRequest.getTitle())
-                .description(taskRequest.getDescription())
-                .status(taskRequest.getStatus())
-                .build()));
+        if(user!=null){
+            taskRepository.save(Task
+                    .builder()
+                    .user(user.get())
+                    .title(taskRequest.getTitle())
+                    .description(taskRequest.getDescription())
+                    .status(taskRequest.getStatus())
+                    .priority(taskRequest.getPriority() != null ? taskRequest.getPriority() : Priority.LOW)
+                    .build());
+        }
+    }
+
+    @Override
+    public void addNewTaskList(List<TaskRequest> taskRequest) {
+        taskRequest.forEach(this::addNewTask);
     }
 
     @Override
@@ -81,6 +93,23 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> statusSortStrategy() {
         taskRepository.findAll().forEach(taskManager::addTask);
         taskManager.setSortStrategy(new StatusSortStrategy());
+        getAllByCreation();
         return taskManager.sortTasks();
+    }
+
+    @Override
+    public List<Task> getAllByCreation() {
+        LocalDateTime time = LocalDateTime.of(2024, 11, 8, 10, 30); // Ejemplo: 8 de noviembre de 2024 a las 10:30
+        int page = 0; // Número de página (0 es la primera página)
+        int size = 10; // Tamaño de página, por ejemplo, 10 elementos por página
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt"); // Ordenar por `createdAt` en orden descendente
+        PageRequest pageable = PageRequest.of(page, size, sort);
+
+        return taskRepository.findByCreatedAtAfter(time,pageable);
+    }
+
+    @Override
+    public List<Task> getAll() {
+        return taskRepository.findAll();
     }
 }

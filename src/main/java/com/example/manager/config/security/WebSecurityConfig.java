@@ -1,5 +1,9 @@
 package com.example.manager.config.security;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,5 +69,30 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Password encoding
     }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+
+        // Configuración de módulos adicionales (por ejemplo, para soporte de Java 8)
+        mapper.findAndRegisterModules();
+
+        // Ignorar propiedades desconocidas durante la deserialización
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // Configurar el ObjectMapper para usar la estrategia de nombres snake_case
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+        // Evitar la escritura de valores nulos en la salida JSON
+        mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+
+        // Formato de fechas ISO estándar
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+        return mapper;
+    }
+
 }
 

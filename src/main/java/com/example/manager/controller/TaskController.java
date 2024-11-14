@@ -4,77 +4,77 @@ import com.example.manager.dto.TaskRequest;
 import com.example.manager.model.Priority;
 import com.example.manager.model.Status;
 import com.example.manager.model.Task;
-import com.example.manager.service.TaskService;
+import com.example.manager.service.*;
+import com.example.manager.service.facade.TaskFacade;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 @AllArgsConstructor
 public class TaskController {
 
-    private final TaskService taskService;
+    private final TaskFacade taskFacade;
 
-    @PostMapping("/add")
-    public ResponseEntity<Void> addNewTask(@RequestBody TaskRequest body) {
-        taskService.addNewTask(body);
+    @PostMapping
+    public ResponseEntity<Void> addNewTask(@RequestBody TaskRequest taskRequest) {
+        taskFacade.addNewTask(taskRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<Void> addNewTaskList(@RequestBody List<TaskRequest> tasks) {
+        taskFacade.addNewTaskList(tasks);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> updateTaskStatus(@PathVariable Long id, @RequestParam Status state) {
+        taskFacade.updateTaskStatus(id, state);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/add/list")
-    public ResponseEntity<Void> addNewTaskList(@RequestBody List<TaskRequest> body) {
-        taskService.addNewTaskList(body);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/update/state")
-    public ResponseEntity<Void> updateTask(@RequestParam Long id,
-                                           @RequestParam Status state) {
-        taskService.updateTask(id,state);
-        return ResponseEntity.ok().build();
-    }
-    @GetMapping("/get/all/pending")
-//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @GetMapping("/pending")
     public ResponseEntity<List<Task>> getAllPending() {
-        return ResponseEntity.ok(taskService.getAllPending());
+        return ResponseEntity.ok(taskFacade.getAllPending());
     }
-    @GetMapping("/get/all/in/progress")
+
+    @GetMapping("/in-progress")
     public ResponseEntity<List<Task>> getAllInProgress() {
-        return ResponseEntity.ok(taskService.getAllInProgress());
+        return ResponseEntity.ok(taskFacade.getAllInProgress());
     }
-    @GetMapping("/get/all/completed")
-    public ResponseEntity<List<Task>> getAllInCompleted() {
-        return ResponseEntity.ok(taskService.getAllInCompleted());
+
+    @GetMapping("/completed")
+    public ResponseEntity<List<Task>> getAllCompleted() {
+        return ResponseEntity.ok(taskFacade.getAllCompleted());
     }
+
     @GetMapping("/priority")
-    public ResponseEntity<List<Task>> priority(@RequestParam Priority priority) {
-        return ResponseEntity.ok(taskService.getAllPriority(priority));
+    public ResponseEntity<List<Task>> getByPriority(@RequestParam Priority priority) {
+        return ResponseEntity.ok(taskFacade.getByPriority(priority));
     }
 
-    @GetMapping("/sort/priority")
-    public ResponseEntity<List<Task>> allPriority() {
-        return ResponseEntity.ok(taskService.prioritySortStrategy());
+    @GetMapping("/sorted/priority")
+    public ResponseEntity<List<Task>> getAllSortedByPriority() {
+        return ResponseEntity.ok(taskFacade.getAllSortedByPriority());
     }
 
-    @GetMapping("/sort/status")
-    public ResponseEntity<List<Task>> allStatus() {
-        return ResponseEntity.ok(taskService.statusSortStrategy());
+    @GetMapping("/sorted/status")
+    public ResponseEntity<List<Task>> getAllSortedByStatus() {
+        return ResponseEntity.ok(taskFacade.getAllSortedByStatus());
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<Task>> getAll() {
-        return ResponseEntity.ok(taskService.getAll());
+        return ResponseEntity.ok(taskFacade.getAll());
     }
 
-    @GetMapping("/pagination")
-    public ResponseEntity<Page<Task>> getAllByCreation(@RequestParam int page,
-                                                       @RequestParam int size) {
-        return ResponseEntity.ok(taskService.getAllByCreation(page,size));
+    @GetMapping("/page")
+    public ResponseEntity<Page<Task>> getAllPaginated(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(taskFacade.getAllPaginated(page, size));
     }
-
 }
